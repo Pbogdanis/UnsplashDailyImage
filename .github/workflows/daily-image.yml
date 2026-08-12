@@ -19,7 +19,7 @@ jobs:
           # Pick ONE source (first non-empty wins): collection -> query -> topics
           # COLLECTION_ID: "12345678"
           # SEARCH_QUERY: "sunflower field"
-          TOPIC_SLUGS: "nature,travel,architecture"
+          TOPIC_SLUGS: "nature,travel,architecture-interior"
         run: node scripts/generate.mjs
       - name: Commit daily.json
         run: |
