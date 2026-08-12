@@ -1,0 +1,30 @@
+name: daily-image
+on:
+  schedule:
+    - cron: "10 0 * * *"    # 00:10 UTC daily
+    - cron: "10 12 * * *"   # 12:10 UTC backup run
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Fetch today's image
+        env:
+          UNSPLASH_ACCESS_KEY: ${{ secrets.UNSPLASH_ACCESS_KEY }}
+          # Pick ONE source (first non-empty wins): collection -> query -> topics
+          # COLLECTION_ID: "12345678"
+          # SEARCH_QUERY: "sunflower field"
+          TOPIC_SLUGS: "nature,travel,building"
+        run: node scripts/generate.mjs
+      - name: Commit daily.json
+        run: |
+          git config user.name "daily-bot"
+          git config user.email "bot@users.noreply.github.com"
+          git add daily.json
+          git diff --cached --quiet || git commit -m "daily image $(date -u +%F)"
+          git push
